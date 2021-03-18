@@ -10,13 +10,13 @@
 prompt_help(){
     echo "HELP:
 Sample usage of the function:
-    ./modify.sh -r -l|-u dir/filename           //not working
-    ./modify.sh -r <sed pattern> dir/filename   //not working
+    ./modify.sh -r -l|-u directory           //not working
+    ./modify.sh -r <sed pattern> directory   //not working
     ./modify.sh -h              //working
     ./modify.sh -u dir/filename dir/filename //working
     ./modify.sh -u dir/filename //working
     ./modify.sh -l filename filename//working
-        
+    ./modify.sh <sed pattern> filename
 The script is dedicated to lowerizing [-l] 
 file names, uppercasing [-u] file names or internally calling sed
 command with the given sed pattern which will operate on file names.
@@ -25,30 +25,31 @@ Changes may be done either with recursion [-r] or without it. "
 
 change_size(){
     if [ -z "$1" ]; then                            # could use 'test' instead of '[]'
-        echo "No directories/files were given"  
+        echo "No directories/files were given"      # if there are no arguments
     elif [ -e "$1" ]; then
-        local filename=$(basename $1)
-        case "$up_or_low" in
+        local filename=$(basename $1)               # taking file name
+        local pathname=$(dirname $1)                # taking directory name
+        case "$action" in
 
             l)
-                local new_filename="$(echo "$filename" | tr A-Z a-z)"
-                ;;
+                local new_filename="$(echo "$filename" | tr A-Z a-z)"   #lowercasing
+                ;;  
             u)
-                local new_filename="$(echo "$filename" | tr a-z A-Z)"
+                local new_filename="$(echo "$filename" | tr a-z A-Z)"   #uppercasing
+                ;;
+            sed)
+                local new_filename="$(echo "$filename" | sed $sed_p)"   #sed pattern
                 ;;
             *)
-                echo "Error"
+                echo "Error"                                            #should not get here
                 ;;
         esac
-        local new="${pathname}/${new_filename}"
+        local new="${pathname}/${new_filename}"     # overwriting: to do: exceptions/ifs
         mv "$1" "$new"
     else
-        echo "No "$1" file exists"
+        echo "No "$1" file exists"                  # we cannot modify something that doesn't exit
     fi
 }
-
-
-
 
 ### MAIN SCRIPT ###
 if [ -z "$1" ]; then
@@ -57,8 +58,8 @@ Type ./modify.sh -h for help."
     exit 0
 fi
 case "$1" in
-    -R | -r)
-        echo recursive
+    -r | -R)
+        R=1
         shift
         ;;
     -h | -H)
@@ -70,28 +71,22 @@ esac
 case "$1" in
 
     -u | -U)
-        up_or_low=u
+        action=u
         shift
-        pathname=$(dirname $1)
-        while [ -n "$1" ]; do
-        change_size "$1" "$up_or_low" "$pathname"
-        shift
-        done 
         ;;
     -l | -L)
-        up_or_low=l
+        action=l
         shift
-        pathname=$(dirname $1)
-        while [ -n "$1" ]; do
-        change_size "$1" "$up_or_low" "$pathname"
-        shift
-        done 
         ;;
     *)
-        echo "Wrong input.
-Type ./modify.sh -h for help."
-        exit 0
+        action=sed
+        sed_p=$1
+        shift
         ;;
 esac
 
+while [ -n "$1" ]; do
+        change_size "$1" "$action" "$sed_p"
+        shift
+done
 
