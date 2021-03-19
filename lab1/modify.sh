@@ -44,17 +44,17 @@ change(){
     esac
     local new="${pathname}/${new_filename}"
     if [ "$1" != "$new" ];then     
-        mv "$1" "$new"              # overwriting
+        mv "$1" "$new"                      # overwriting
     fi
 }
 
 rec(){
     
-    for file in "$1"/*
+    for file in "$1"/*                      # Iterate over files in $1 directory
     do
-        if [ -d "$file" ]; then
+        if [ -d "$file" ]; then             # If $file is a directory -> go into it and iterate over its files
             rec "$file" "$action" "$sed_p"
-        elif [ -f "$file" ]; then
+        elif [ -f "$file" ]; then           # If $file is a file -> modify its name
             change "$file" "$action" "$sed_p"
         else
             break
@@ -96,11 +96,11 @@ case "$1" in
         ;;
 esac
 
-while [ -n "$1" ]; do
+while [ -n "$1" ]; do                   # while $1 is not a null string
         
-    if [ $R -eq 1 -a -d "$1" ]; then
+    if [ $R -eq 1 -a -d "$1" ]; then    # if R mode is on and $1 is directory
         rec "$1" "$action" "$sed_p"
-    elif [ -f "$1" ]; then
+    elif [ -f "$1" ]; then              # if $1 is a regular file (not directory nor device)
         change "$1" "$action" "$sed_p"
     else
         echo "Wrong input.
@@ -108,3 +108,4 @@ Type './modify.sh -h' for help!"
     fi
     shift
 done
+
