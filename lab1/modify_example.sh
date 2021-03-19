@@ -1,14 +1,13 @@
+###Creating few files for simple tests
 mkdir dir1
 cd dir1
-touch test.test
+touch test.c
 mkdir dir2
-touch blablabla
-
 cd dir2
 touch pathtest
 cd ..
 
-###Creating tree directory for recursive tests
+###Creating tree of files for recursive tests
 mkdir rec_dir2
 cd rec_dir2 
 touch file2
@@ -31,26 +30,26 @@ cd ..
 cd ..
 cd ..
 cd ..
-
-echo "Using: ./modify.sh -h"
+echo "=================================================
+TESTING: ./modify.sh -h"
 ./modify.sh -H
 echo "=================================================
-Testing simple, proper usage:"
+TESTING: SIMPLE, PROPER USAGE:"
 
 echo "
-Uppercasing test.test in dir1: ./modify.sh -u dir1/test.test
+Uppercasing test.c in dir1: ./modify.sh -u dir1/test.c
 dir1:"
 echo "Before: " 
 ls dir1
-./modify.sh -u dir1/test.test
+./modify.sh -u dir1/test.c          # Uppercasing test.c file
 echo "After: " 
 ls dir1
 echo "
-Lowercasing TEST.TEST in dir1: ./modify.sh -l dir1/TEST.TEST
+Lowercasing TEST.C in dir1: ./modify.sh -l dir1/TEST.C
 dir1:"
 echo "Before: " 
 ls dir1
-./modify.sh -l dir1/TEST.TEST
+./modify.sh -l dir1/TEST.C          # Lowercasing TEST.Cfile
 echo "After: " 
 ls dir1
 echo "
@@ -63,7 +62,7 @@ echo "After: "
 ls dir1/dir2
 
 echo "=================================================
-Testing recursive, proper usage:"
+TESTING: RECURSIVE, PROPER USAGE:"
 echo "
 Before: "
 echo "
@@ -81,7 +80,7 @@ ls dir1/rec_dir2/dir11/dir12
 echo "
 dir13: "
  ls dir1/rec_dir2/dir11/dir13
-./modify.sh -r -u dir1/rec_dir2
+./modify.sh -r 's/f/Frag/g' dir1/rec_dir2
 echo "-----
 After: "
 echo "
@@ -100,8 +99,50 @@ echo "
 dir13: "
 ls dir1/rec_dir2/dir11/dir13
 
+echo "=================================================
+TESTING: SIMPLE, IMPROPER USAGE:"
+echo "
+Uppercasing non-existing file in dir1: ./modify.sh -u dir1/blabla.c
+dir1:"
+echo "Before: " 
+ls dir1
+./modify.sh -u dir1/blabla.c          # Uppercasing test.c file
+echo "After: " 
+ls dir1
+echo "
+Uppercasing existing file in non-existing dir0: ./modify.sh -u dir0/test.c
+dir1:"
+echo "Before: " 
+ls dir1
+./modify.sh -u dir0/test.c          
+echo "After: " 
+ls dir1
+echo "
+Wrong input into dir1: ./modify.sh 'blablabla' dir1/test.c    
+dir1:"
+echo "Before: " 
+ls dir1
+./modify.sh blablabla dir1/test.c         
+echo "After: " 
+ls dir1
+echo "
+Wrong input into dir1: ./modify.sh 's/bla/failure/g' dir1/test.c    
+dir1:"
+echo "Before: " 
+ls dir1
+./modify.sh 's/bla/failure/g' dir1/test.c         
+echo "After: " 
+ls dir1
+echo "
+No files given: ./modify.sh -l dir1
+dir1:"
+echo "Before: " 
+ls dir1
+./modify.sh -l dir1         
+ls dir1
+echo "
+No directory/files given: ./modify.sh -l"
+./modify.sh -l              
+
 
 rm -r dir1
-
-
-
