@@ -5,18 +5,23 @@ R=0                 # Recursive mode set to zero
 prompt_help(){
     echo "HELP:
 Sample usage of the function:
-    ./modify.sh -r -l|-u directory           //not working
-    ./modify.sh -r <sed pattern> directory   //not working
-    ./modify.sh -h              //working
-    ./modify.sh -u dir/filename dir/filename //working
-    ./modify.sh -u dir/filename //working
-    ./modify.sh -l filename filename//working
+
+    ./modify.sh -r -l|-u directory           
+    ./modify.sh -r <sed pattern> directory   
+    ./modify.sh -h              
+    ./modify.sh -u directory/filename directory/filename 
+    ./modify.sh -u directory/filename 
+    ./modify.sh -l filename filename
+    ./modify.sh <sed pattern> directory/filename
     ./modify.sh <sed pattern> filename
 
-The script is dedicated to lowerizing [-l] 
-file names, uppercasing [-u] file names or internally calling sed
-command with the given sed pattern which will operate on file names.
-Changes may be done either with recursion [-r] or without it. "
+Where:
+    -l script lowerizes given filename
+    -u script uppercases given filename
+    <sed pattern> script uses sed command to change some pattern in filename
+    (eg. s/test/success/g -> changing 'test' for 'success')
+    -r script uses recursive directory listing to find and change filenames
+    (takes only directories as argument)"
 }
 
 change(){
@@ -36,6 +41,7 @@ change(){
             ;;
         *)
             echo "Error"                                            #should not get here
+            exit 1
             ;;
     esac
 
@@ -43,6 +49,8 @@ change(){
 
     if [ "$1" != "$new" ];then     
         mv "$1" "$new"                      # overwriting
+    else
+        echo "Failed to rename, check input correctness!"
     fi
 }
 
@@ -61,9 +69,9 @@ rec(){
 
 ### MAIN SCRIPT ###
 if [ -z "$1" ]; then
-    echo "Wrong input.
+    echo "Wrong input!
 Type './modify.sh -h' for help."
-    exit 0
+    exit 1
 fi
 
 case "$1" in
@@ -94,14 +102,21 @@ case "$1" in
         ;;
 esac
 
+if [ -z "$1" ]; then
+    echo "Wrong input!
+Type './modify.sh -h' for help."
+    exit 1
+fi
+
 while [ -n "$1" ]; do                   # while $1 is not a null string
     if [ $R -eq 1 -a -d "$1" ]; then    # if R mode is on and $1 is directory
         rec "$1" "$action" "$sed_p"
     elif [ -f "$1" ]; then              # if $1 is a regular file (not directory nor device)
         change "$1" "$action" "$sed_p"
     else
-        echo "Wrong input.
+        echo "Wrong input!
 Type './modify.sh -h' for help!"
+        exit 1
     fi
     shift
 done
