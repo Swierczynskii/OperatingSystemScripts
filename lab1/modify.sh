@@ -25,32 +25,26 @@ Changes may be done either with recursion [-r] or without it. "
 }
 
 change(){
-    if [ -z "$1" ]; then                            # could use 'test' instead of '[]'
-        echo "No directories/files were given"      # if there are no arguments
-    elif [ -f "$1" ]; then
-        local filename=$(basename $1)               # taking file name
-        local pathname=$(dirname $1)                # taking directory name
-        case "$action" in
+    local filename=$(basename $1)               # taking file name
+    local pathname=$(dirname $1)                # taking directory name
+    case "$action" in
 
-            l)
-                local new_filename="$(echo "$filename" | tr A-Z a-z)"   #lowercasing
-                ;;  
-            u)
-                local new_filename="$(echo "$filename" | tr a-z A-Z)"   #uppercasing
-                ;;
-            sed)
-                local new_filename="$(echo "$filename" | sed $sed_p)"   #sed pattern
-                ;;
-            *)
-                echo "Error"                                            #should not get here
-                ;;
-        esac
-        local new="${pathname}/${new_filename}"
-        if [ "$1" != "$new" ];then     
-            mv "$1" "$new"              # overwriting
-        fi
-    else
-        echo "No "$1" file exists"                  # we cannot modify something that doesn't exit
+        l)
+            local new_filename="$(echo "$filename" | tr A-Z a-z)"   #lowercasing
+            ;;  
+        u)
+            local new_filename="$(echo "$filename" | tr a-z A-Z)"   #uppercasing
+            ;;
+        sed)
+            local new_filename="$(echo "$filename" | sed $sed_p)"   #sed pattern
+            ;;
+        *)
+            echo "Error"                                            #should not get here
+            ;;
+    esac
+    local new="${pathname}/${new_filename}"
+    if [ "$1" != "$new" ];then     
+        mv "$1" "$new"              # overwriting
     fi
 }
 
@@ -71,7 +65,7 @@ rec(){
 ### MAIN SCRIPT ###
 if [ -z "$1" ]; then
     echo "Wrong input.
-Type ./modify.sh -h for help."
+Type './modify.sh -h' for help."
     exit 0
 fi
 case "$1" in
@@ -106,11 +100,11 @@ while [ -n "$1" ]; do
         
     if [ $R -eq 1 -a -d "$1" ]; then
         rec "$1" "$action" "$sed_p"
-    elif [ -e "$1" ]; then
+    elif [ -f "$1" ]; then
         change "$1" "$action" "$sed_p"
     else
         echo "Wrong input.
-Type ./modify.sh -h for help."
+Type './modify.sh -h' for help!"
     fi
-shift
+    shift
 done
