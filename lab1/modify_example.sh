@@ -1,3 +1,5 @@
+#Script used to execution of modify.sh with simple tests
+
 ###Creating few files for simple tests
 mkdir dir1
 cd dir1
