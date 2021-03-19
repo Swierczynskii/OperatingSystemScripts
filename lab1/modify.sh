@@ -1,12 +1,7 @@
 #!/bin/bash
 
+R=0                 # Recursive mode set to zero
 
-## Arguments reference
-# $# --> number of arguments 
-# $0 --> filename of script
-# $1 --> 1st argument // could be [-l] or [-u] or [-h] or [-r]
-# $2 --> 2nd argument // could be [-l] or [-u] or sed or <dir/file names...>
-R=0
 prompt_help(){
     echo "HELP:
 Sample usage of the function:
@@ -108,4 +103,3 @@ Type './modify.sh -h' for help!"
     fi
     shift
 done
-
