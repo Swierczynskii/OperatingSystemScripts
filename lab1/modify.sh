@@ -6,7 +6,7 @@
 # $0 --> filename of script
 # $1 --> 1st argument // could be [-l] or [-u] or [-h] or [-r]
 # $2 --> 2nd argument // could be [-l] or [-u] or sed or <dir/file names...>
-
+R=0
 prompt_help(){
     echo "HELP:
 Sample usage of the function:
@@ -17,16 +17,17 @@ Sample usage of the function:
     ./modify.sh -u dir/filename //working
     ./modify.sh -l filename filename//working
     ./modify.sh <sed pattern> filename
+
 The script is dedicated to lowerizing [-l] 
 file names, uppercasing [-u] file names or internally calling sed
 command with the given sed pattern which will operate on file names.
 Changes may be done either with recursion [-r] or without it. "
 }
 
-change_size(){
+change(){
     if [ -z "$1" ]; then                            # could use 'test' instead of '[]'
         echo "No directories/files were given"      # if there are no arguments
-    elif [ -e "$1" ]; then
+    elif [ -f "$1" ]; then
         local filename=$(basename $1)               # taking file name
         local pathname=$(dirname $1)                # taking directory name
         case "$action" in
@@ -44,11 +45,27 @@ change_size(){
                 echo "Error"                                            #should not get here
                 ;;
         esac
-        local new="${pathname}/${new_filename}"     # overwriting: to do: exceptions/ifs
-        mv "$1" "$new"
+        local new="${pathname}/${new_filename}"
+        if [ "$1" != "$new" ];then     
+            mv "$1" "$new"              # overwriting
+        fi
     else
         echo "No "$1" file exists"                  # we cannot modify something that doesn't exit
     fi
+}
+
+rec(){
+    
+    for file in "$1"/*
+    do
+        if [ -d "$file" ]; then
+            rec "$file" "$action" "$sed_p"
+        elif [ -f "$file" ]; then
+            change "$file" "$action" "$sed_p"
+        else
+            break
+        fi
+    done
 }
 
 ### MAIN SCRIPT ###
@@ -86,7 +103,14 @@ case "$1" in
 esac
 
 while [ -n "$1" ]; do
-        change_size "$1" "$action" "$sed_p"
-        shift
+        
+    if [ $R -eq 1 -a -d "$1" ]; then
+        rec "$1" "$action" "$sed_p"
+    elif [ -e "$1" ]; then
+        change "$1" "$action" "$sed_p"
+    else
+        echo "Wrong input.
+Type ./modify.sh -h for help."
+    fi
+shift
 done
-
