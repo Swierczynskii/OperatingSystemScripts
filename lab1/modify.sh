@@ -56,7 +56,7 @@ change(){
 
 rec(){
 
-    for file in "$1"/* ; do                    # Iterate over files in $1 directory
+    for file in "$1"/* ; do                 # Iterate over files in $1 directory
         if [ -d "$file" ]; then             # If $file is a directory -> go into it and iterate over its files
             rec "$file" "$action" "$sed_p"
         elif [ -f "$file" ]; then           # If $file is a file -> modify its name
