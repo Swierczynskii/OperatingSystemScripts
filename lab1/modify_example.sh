@@ -1,12 +1,10 @@
-#Script used to execution of modify.sh with simple tests
-
 ###Creating few files for simple tests
 mkdir dir1
 cd dir1
 touch test.c
 mkdir dir2
 cd dir2
-touch pathtest
+touch pathtest.c
 cd ..
 
 ###Creating tree of files for recursive tests
@@ -47,19 +45,19 @@ ls dir1
 echo "After: " 
 ls dir1
 echo "
-Lowercasing TEST.C in dir1: ./modify.sh -l dir1/TEST.C
+Lowercasing TEST.C in dir1: ./modify.sh -l dir1/TEST.c
 dir1:"
 echo "Before: " 
 ls dir1
-./modify.sh -l dir1/TEST.C          # Lowercasing TEST.Cfile
+./modify.sh -l dir1/TEST.C          # Lowercasing TEST.C file
 echo "After: " 
 ls dir1
 echo "
-Sed pattern test in dir2, replace t with g: ./modify.sh 's/test/success/g' dir1/dir2/file2
+Sed pattern test in dir2, replace t with g: ./modify.sh 's/test/success/g' dir1/dir2/pathtest.c
 dir1:"
 echo "Before: " 
 ls dir1/dir2
-./modify.sh 's/test/success/g' dir1/dir2/pathtest
+./modify.sh 's/c/d/g' dir1/dir2/pathtest.c
 echo "After: "
 ls dir1/dir2
 
@@ -108,7 +106,7 @@ Uppercasing non-existing file in dir1: ./modify.sh -u dir1/blabla.c
 dir1:"
 echo "Before: " 
 ls dir1
-./modify.sh -u dir1/blabla.c          # Uppercasing test.c file
+./modify.sh -u dir1/blabla.c          
 echo "After: " 
 ls dir1
 echo "
@@ -145,6 +143,13 @@ ls dir1
 echo "
 No directory/files given: ./modify.sh -l"
 ./modify.sh -l              
-
-
-rm -r dir1
+echo "=================================================
+TESTING: RECURSIVE, IMPROPER USAGE:"
+./modify.sh -r 's/Frag/f/g' dir1/rec_dir2
+echo "
+No instructions given: ./modify.sh -r dir1/rec_dir2"
+./modify.sh -r dir1/rec_dir2
+echo "
+No directory given: ./modify.sh -r -u"
+./modify.sh -r -u
+#rm -r dir1
