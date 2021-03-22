@@ -109,7 +109,11 @@ Type './modify.sh -h' for help."
 fi
 
 while [ -n "$1" ]; do                   # while $1 is not a null string
-    if [ $R -eq 1 -a -d "$1" ]; then    # if R mode is on and $1 is directory
+    if [ $R -eq 1 -a -f "$1" ]; then    # if R mode is on and $1 is a file
+        echo "Wrong input!
+Type './modify.sh -h' for help!"
+        exit 1
+    elif [ $R -eq 1 -a -d "$1" ]; then  # if R mode is on and $1 is a directory
         rec "$1" "$action" "$sed_p"
     elif [ -f "$1" ]; then              # if $1 is a regular file (not directory nor device)
         change "$1" "$action" "$sed_p"
