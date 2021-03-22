@@ -152,4 +152,4 @@ No instructions given: ./modify.sh -r dir1/rec_dir2"
 echo "
 No directory given: ./modify.sh -r -u"
 ./modify.sh -r -u
-#rm -r dir1
+rm -r dir1
