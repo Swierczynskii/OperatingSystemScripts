@@ -51,6 +51,7 @@ change(){
         mv "$1" "$new"                      # overwriting
     else
         echo "Failed to rename, check input correctness!"
+        exit 1
     fi
 }
 
@@ -94,6 +95,11 @@ case "$1" in
     -l | -L)
         action=l
         shift
+        ;;
+    -*)
+        echo "Wrong input!
+Type './modify.sh -h' for help."
+        exit 1
         ;;
     *)
         action=sed
