@@ -63,7 +63,15 @@ ls dir1
 echo "After: " 
 ls dir1
 echo "
-Sed pattern test in dir2, replace test with _success: ./modify.sh 's/test/_success/g' dir1/dir2/pathtest.c
+Lowercasing few files in dir1: ./modify.sh -l dir1/TEST.C dir1/UPPER dir1/TEXT 
+dir1:"
+echo "Before: " 
+ls dir1
+./modify.sh -l dir1/TEST.C dir1/UPPER dir1/TEXT        
+echo "After: " 
+ls dir1
+echo "
+Sed pattern test in dir2, replace test with _success: ./modify.sh 's/test/_success/g' dir1/dir2/pathtest
 dir1:"
 echo "Before: " 
 ls dir1/dir2
@@ -110,7 +118,45 @@ ls dir1/rec_dir2/dir11/dir12
 echo "
 dir13: "
 ls dir1/rec_dir2/dir11/dir13
-
+echo "
+==2nd test uppercasing file names: ./modify.sh -r -u dir1/rec_dir2=="
+echo "
+Before: "
+echo "
+rec_dir2: "
+ls dir1/rec_dir2
+echo "
+dir10: "
+ls dir1/rec_dir2/dir10
+echo "
+dir11: "
+ls dir1/rec_dir2/dir11
+echo "
+empty dir12: "
+ls dir1/rec_dir2/dir11/dir12
+echo "
+dir13: "
+ ls dir1/rec_dir2/dir11/dir13
+ echo "
+Use of recursive mode + -u : ./modify.sh -r -u dir1/rec_dir2"
+./modify.sh -r -u dir1/rec_dir2
+echo "
+After: "
+echo "
+rec_dir2: "
+ls dir1/rec_dir2
+echo "
+dir10: "
+ls dir1/rec_dir2/dir10
+echo "
+dir11: "
+ls dir1/rec_dir2/dir11
+echo "
+empty dir12: "
+ls dir1/rec_dir2/dir11/dir12
+echo "
+dir13: "
+ls dir1/rec_dir2/dir11/dir13
 echo "=================================================
 TESTING: SIMPLE, IMPROPER USAGE:"
 echo "
@@ -140,11 +186,12 @@ echo "
 Two arguments given: ./modify.sh -l -u dir1/test.c"
 ./modify.sh -l -u dir1/test.c      
 echo "
-Wrong argument given given: ./modify.sh -lu dir1/test.c"
+Wrong argument given: ./modify.sh -lu dir1/test.c"
 ./modify.sh -lu dir1/test.c       
 echo "=================================================
 TESTING: RECURSIVE, IMPROPER USAGE:"
-./modify.sh -r 's/Frag/f/g' dir1/rec_dir2
+./modify.sh -r -l dir1/rec_dir2
+./modify.sh -r 's/frag/f/g' dir1/rec_dir2
 echo "
 No instructions given: ./modify.sh -r dir1/rec_dir2"
 ./modify.sh -r dir1/rec_dir2
