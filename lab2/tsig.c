@@ -4,14 +4,14 @@
 #include <unistd.h>
 #include <sys/wait.h>
 
-#define NUM_CHILD 4
+#define NUM_CHILD 7
 
 void child_proccess(){
     /* Child Process algorithm */
 
     printf("Child[%d] of parent[%d]\n", getpid(), getppid());
     sleep(10);
-    printf("Execution completed for child[%d].\n", getpid());
+    printf("Execution completed for child[%d]\n", getpid());
 }
 
 void child_killer(int i, pid_t pids[]){
@@ -21,7 +21,7 @@ void child_killer(int i, pid_t pids[]){
 
     for (int j = 0; j < i; j++){
     
-        printf("Child[%d] killed", j);
+        printf("Child[%d] killed\n", pids[j]);
         kill(pids[j], SIGTERM);
     
     }
@@ -32,7 +32,7 @@ int main(void)
     int i;
     pid_t pid;
     pid_t children_pids[NUM_CHILD];
-    int child_num = 0;// in case that child_killer is used
+    int child_num = 0;  // in case that child_killer is used
     printf("\nINITIAL PARENT PID: %d\n\n", getpid());
 
     /*Main process algorithm*/
@@ -49,7 +49,6 @@ int main(void)
             default:
                 children_pids[i] = pid;
                 printf("Parent[%d] with child[%d]\n", getpid(), children_pids[i]);
-                //pid = wait(NULL);
                 break;
         }
 
@@ -57,13 +56,22 @@ int main(void)
         sleep(1);
     }
 
-    int stat;
-    for(int j = 0; j<child_num; j++){
+    int stat, num_zero = 0, num_one = 0;
+
+    for(int j = 0; j < child_num; j++){
+
         pid = wait(&stat);
-        printf("Exit status of child[%d]: %d\n", children_pids[j], WEXITSTATUS(stat));
+        printf("%d: Exit status of child[%d]: %d\n", j+1, children_pids[j], WEXITSTATUS(stat));
+        if(WEXITSTATUS(stat) == 0)
+            num_zero++;
+        else
+            num_one++;
+    
     }
 
-    printf("\nNo more children for parent[%d].\n\n", getpid());
-
+    printf("\nNo more children for parent[%d].\n", getpid());
+    printf("Number of recieved 0 exit codes: %d\n", num_zero);
+    printf("Number of recieved 1 exit codes: %d\n\n", num_one);
+    
     return 0;
 }
