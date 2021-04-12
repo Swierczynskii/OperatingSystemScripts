@@ -4,19 +4,35 @@
 #include <unistd.h>
 #include <sys/wait.h>
 
-#define NUM_CHILD 7
-#define INFINITE for(;;)
+#define NUM_CHILD 20
+#define INFINITE_LOOP for(;;)
 #define WITH_SIGNALS
 
 #ifdef WITH_SIGNALS
     int key_pressed = 0;
 #endif 
 
-/* interrupt signal: default =  ctrl+c */
+/* interrupt signal: Linux default =  ctrl+c */
+
+#ifdef WITH_SIGNALS
+void sig_int_pressed(){
+    /* Function printing message when interruption signal triggered */
+    printf("Parent[%d]: Interrupt triggered\n", getpid());
+    key_pressed = 1;
+}
+
+void sig_term_prompt(){
+    /* Function printing message child is terminated due to interrupt */
+    printf("Child[%d]: Terminated\n", getpid());
+}
+#endif 
 
 void child_proccess(){
     /* Child Process algorithm */
-
+    #ifdef WITH_SIGNALS
+        signal(SIGINT, SIG_IGN);
+        signal(SIGTERM, sig_term_prompt);
+    #endif
     printf("Child[%d]: under Parent[%d]\n", getpid(), getppid());
     sleep(10);
     printf("Child[%d]: Execution completed\n", getpid());
@@ -30,15 +46,6 @@ void child_killer(int i, pid_t pids[]){
     
     }
 }
-
-#ifdef WITH_SIGNALS
-void sig_int_pressed(int signal){
-
-    //printf("Interrupt triggered for Parent[%d]\n", getpid());
-    key_pressed = 1;
-
-}
-#endif 
 
 int main(void)
 {
@@ -54,8 +61,8 @@ int main(void)
             signal(it, SIG_IGN);
         }
 
-        signal(SIGCHLD, SIG_DFL);
-        signal(SIGINT, sig_int_pressed);
+        signal(SIGCHLD, SIG_DFL);   // restoring default handler for SIGCHLD
+        signal(SIGINT, sig_int_pressed);    //Interrupt handler
     #endif
     
     /* Main process algorithm */
@@ -72,26 +79,25 @@ int main(void)
                 return 1;
             default:
                 children_pids[i] = pid;
-                printf("Parent[%d]: with new Child[%d]\n", getpid(), children_pids[i]);
+                if(key_pressed == 0)
+                    printf("Parent[%d]: with new Child[%d]\n", getpid(), children_pids[i]);
+                else{
+                    printf("Parent[%d]: Creation process of Child[%d] interrupted\n", getpid(), children_pids[i]);
+                    child_killer(i, children_pids);
+                }
                 break;
+
         }
-        #ifdef WITH_SIGNALS
-            if(key_pressed == 1){
-                printf("Parent[%d]: Creation process interrupted\n", getpid());
-                child_killer(i, children_pids);
-            }
-        #endif
         sleep(1);
     }
 
     int stat, num_zero = 0, num_one = 0;
     int j = 0;
 
-    INFINITE{
+    INFINITE_LOOP{
 
         pid = wait(&stat);
-        if(pid == -1)
-            //printf("Stopping loop\n");
+        if(pid == -1) // Stopping loop wait() returns -1 when 
             break;
 
         printf("Child[%d]: Exit status: %d\n", children_pids[j], WEXITSTATUS(stat));
@@ -107,6 +113,7 @@ int main(void)
     printf("Number of recieved 0 exit codes: %d\n", num_zero);
     printf("Number of recieved 1 exit codes: %d\n\n", num_one);
     
+    /* Setting signals to default */
     #ifdef WITH_SIGNALS
         for(int it = 0; it < _NSIG; it++){
             signal(it, SIG_DFL);
