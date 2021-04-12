@@ -3,8 +3,9 @@
 #include <signal.h>
 #include <unistd.h>
 #include <sys/wait.h>
+#include <stdbool.h>
 
-#define NUM_CHILD 20
+#define NUM_CHILD 11
 #define INFINITE_LOOP for(;;)
 #define WITH_SIGNALS
 
@@ -22,7 +23,7 @@ void sig_int_pressed(){
 }
 
 void sig_term_prompt(){
-    /* Function printing message child is terminated due to interrupt */
+    /* Function printing message that child is terminated because of interrupt */
     printf("Child[%d]: Terminated\n", getpid());
 }
 #endif 
@@ -38,10 +39,10 @@ void child_proccess(){
     printf("Child[%d]: Execution completed\n", getpid());
 }
 
-void child_killer(int i, pid_t pids[]){
-    /* Child processes killing function */
+void child_terminator(int i, pid_t pids[]){     // SIGTERM - correct closing of the process
+    /* Child processes killing function */      // SIGKILL - destroying process
     for (int j = 0; j < i; j++)
-        kill(pids[j], SIGTERM);
+        kill(pids[j], SIGTERM);                 // kill signals: SIGTERM, SIGKILL, SIGSTOP, SIGCONT
 }
 
 int main(void)
@@ -57,7 +58,8 @@ int main(void)
         for(int it = 0; it < _NSIG; it++)
             signal(it, SIG_IGN);
 
-        signal(SIGCHLD, SIG_DFL);   // restoring default handler for SIGCHLD
+        signal(SIGCHLD, SIG_DFL);   // restoring default handler for SIGCHLD 
+                                    // SIGCHLD tells parent that one of the child processes ended
         signal(SIGINT, sig_int_pressed);    //Interrupt handler
     #endif
     
@@ -70,16 +72,16 @@ int main(void)
                 child_proccess();
                 return 0;
             case -1:
-                printf("Fork failed\n");
-                child_killer(i, children_pids);
+                printf("Fork() failed\n");
+                child_terminator(i, children_pids);
                 return 1;
             default:
                 children_pids[i] = pid;
                 if(key_pressed == 0)
-                    printf("Parent[%d]: with new Child[%d]\n", getpid(), children_pids[i]);
+                    printf("Parent[%d]: with new Child[%d]\n", getpid(), pid);
                 else{
-                    printf("Parent[%d]: Creation process of Child[%d] interrupted\n", getpid(), children_pids[i]);
-                    child_killer(i, children_pids);
+                    printf("Parent[%d]: Creation process of Child[%d] interrupted\n", getpid(), pid);
+                    child_terminator(i, children_pids);
                 }
                 break;
 
@@ -87,22 +89,20 @@ int main(void)
         sleep(1);
     }
 
-    int stat, num_zero = 0, num_one = 0;
-    int j = 0;
+    int status, num_zero = 0, num_one = 0;
 
     INFINITE_LOOP{
 
-        pid = wait(&stat);
-        if(pid == -1) // Stopping loop wait() returns -1 when 
-            break;
-
-        printf("Child[%d]: Exit status: %d\n", children_pids[j], WEXITSTATUS(stat));
+        pid = wait(&status);
+        if(pid == -1) // Stopping loop  // wait() returns PID of the child
+            break;                      // if -1 is returned error occurs -> we are in parent
+        if(WIFEXITED(status) == true)
+            printf("Child[%d]: Exit status: %d\n", pid, WEXITSTATUS(status));
         
-        if(WEXITSTATUS(stat) == 0)
+        if(WEXITSTATUS(status) == 0)
             num_zero++;
         else
             num_one++;
-        j++;
     }
 
     printf("\nNo more children for Parent[%d].\n", getpid());
