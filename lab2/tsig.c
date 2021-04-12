@@ -40,11 +40,8 @@ void child_proccess(){
 
 void child_killer(int i, pid_t pids[]){
     /* Child processes killing function */
-    for (int j = 0; j < i; j++){
-    
+    for (int j = 0; j < i; j++)
         kill(pids[j], SIGTERM);
-    
-    }
 }
 
 int main(void)
@@ -57,9 +54,8 @@ int main(void)
     /* Ignoring all signals with the signal() */
     
     #ifdef WITH_SIGNALS
-        for(int it = 0; it < _NSIG; it++){
+        for(int it = 0; it < _NSIG; it++)
             signal(it, SIG_IGN);
-        }
 
         signal(SIGCHLD, SIG_DFL);   // restoring default handler for SIGCHLD
         signal(SIGINT, sig_int_pressed);    //Interrupt handler
@@ -115,9 +111,8 @@ int main(void)
     
     /* Setting signals to default */
     #ifdef WITH_SIGNALS
-        for(int it = 0; it < _NSIG; it++){
+        for(int it = 0; it < _NSIG; it++)
             signal(it, SIG_DFL);
-        }
     #endif
     
     return 0;
