@@ -9,9 +9,8 @@
 #define INFINITE_LOOP for(;;)
 #define WITH_SIGNALS
 
-#ifdef WITH_SIGNALS
-    int key_pressed = 0;
-#endif 
+int key_pressed = 0;
+
 
 /* interrupt signal: Linux default =  ctrl+c */
 
