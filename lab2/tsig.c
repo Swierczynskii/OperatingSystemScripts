@@ -15,19 +15,19 @@ int key_pressed = 0;
 /* interrupt signal: Linux default =  ctrl+c */
 
 #ifdef WITH_SIGNALS
-void sig_int_pressed(){
+void sig_int_pressed(int s){
     /* Function printing message when interruption signal triggered */
     printf("Parent[%d]: Interrupt triggered\n", getpid());
     key_pressed = 1;
 }
 
-void sig_term_prompt(){
+void sig_term_prompt(int s){
     /* Function printing message that child is terminated because of interrupt */
     printf("Child[%d]: Terminated\n", getpid());
 }
 #endif 
 
-void child_proccess(){
+void child_proccess(void){
     /* Child Process algorithm */
     #ifdef WITH_SIGNALS
         signal(SIGINT, SIG_IGN);
@@ -46,7 +46,6 @@ void child_terminator(int i, pid_t pids[]){     // SIGTERM - correct closing of 
 
 int main(void)
 {
-    int i;
     pid_t pid;
     pid_t children_pids[NUM_CHILD];
     printf("\nINITIAL PARENT PID: %d\n\n", getpid());
@@ -54,8 +53,8 @@ int main(void)
     /* Ignoring all signals with the signal() */
     
     #ifdef WITH_SIGNALS
-        for(int it = 0; it < _NSIG; it++)
-            signal(it, SIG_IGN);
+        for(int i = 0; i < _NSIG; i++)
+            signal(i, SIG_IGN);
 
         signal(SIGCHLD, SIG_DFL);   // restoring default handler for SIGCHLD 
                                     // SIGCHLD tells parent that one of the child processes ended
@@ -63,7 +62,7 @@ int main(void)
     #endif
     
     /* Main process algorithm */
-    for(i = 0; i < NUM_CHILD; i++){
+    for(int i = 0; i < NUM_CHILD; i++){
         
         switch(pid = fork()){
 
@@ -110,8 +109,8 @@ int main(void)
     
     /* Setting signals to default */
     #ifdef WITH_SIGNALS
-        for(int it = 0; it < _NSIG; it++)
-            signal(it, SIG_DFL);
+        for(int i = 0; i < _NSIG; i++)
+            signal(i, SIG_DFL);
     #endif
     
     return 0;
