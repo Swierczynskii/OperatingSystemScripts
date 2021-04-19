@@ -7,8 +7,11 @@ Students may also be asked to write their own scheduling algorithms to be used w
 
 The program reads a configuration file (scheduling.conf) and writes two output files (Summary-Results and Summary-Processes).
 To run the program, enter the following command line.
+
 $ java Scheduling scheduling.conf
+
 The program will display "Working..." while the simulation is working, and "Completed." when the simulation is complete.
+
 Working...
 Completed.
 
