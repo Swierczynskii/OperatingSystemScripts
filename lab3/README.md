@@ -13,6 +13,7 @@ $ java Scheduling scheduling.conf
 The program will display "Working..." while the simulation is working, and "Completed." when the simulation is complete.
 
 Working...
+
 Completed.
 
 Create a configuration file in which all processes run an average of 2000 milliseconds with a standard deviation of zero, and which are blocked for input or output every 500 milliseconds.
