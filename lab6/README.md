@@ -24,23 +24,10 @@ Important remarks:
 
 - check error codes after each system call.
 
-
-Manuals (mostly from section 2, i.e. "man -s 2 open"):
-
-man -s 3C getopt
-man open
-man close
-man read
-man write
-man lseek
-man fstat
-man mmap
-man memcpy 
-
 List of necessary include files:
 
-\n#include <sys/types.h>
-\n#include <sys/stat.h>
+#include <sys/types.h>
+#include <sys/stat.h>
 #include <sys/mman.h>
 #include <fcntl.h>
 #include <unistd.h>
