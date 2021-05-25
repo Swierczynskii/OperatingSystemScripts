@@ -39,8 +39,8 @@ man memcpy
 
 List of necessary include files:
 
-#include <sys/types.h>
-#include <sys/stat.h>
+\n#include <sys/types.h>
+\n#include <sys/stat.h>
 #include <sys/mman.h>
 #include <fcntl.h>
 #include <unistd.h>
