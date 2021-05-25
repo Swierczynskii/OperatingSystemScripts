@@ -3,8 +3,8 @@ Operations on files, mmap() and getopt()
 
 Write a program which copies one file to another. Syntax:
 
-  copy [-m] <file_name> <new_file_name>
-  copy [-h]
+  - copy [-m] <file_name> <new_file_name>
+  - copy [-h]
 
 
 Without option -m use read() and write() functions to copy file contents. If
@@ -26,8 +26,8 @@ Important remarks:
 
 List of necessary include files:
 
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <sys/mman.h>
-#include <fcntl.h>
-#include <unistd.h>
+- #include <sys/types.h>
+- #include <sys/stat.h>
+- #include <sys/mman.h>
+- #include <fcntl.h>
+- #include <unistd.h>
